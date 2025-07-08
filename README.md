@@ -1,5 +1,5 @@
 
-# Learn Laravel API
+## Learn Laravel API
 
 Belajar membangun RESTful API menggunakan Laravel sebagai bagian dari pengembangan skill pribadi dalam backend development.
 
@@ -86,7 +86,8 @@ php artisan serve
 - [x] Factory dan seeder
 - [x] Membuat controller berbasis resource
 - [ ] Menambahkan validasi dengan Form Request
-- [ ] Menambahkan autentikasi API (JWT / Sanctum) -->
+- [ ] Menambahkan autentikasi API (JWT / Sanctum)
+-->
 
 ---
 
