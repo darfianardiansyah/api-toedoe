@@ -27,7 +27,7 @@ Mempelajari konsep-konsep utama dalam pembuatan API dengan Laravel, seperti:
 - **Version Control**: Git & GitHub
 
 ---
-
+<!-- 
 ## 📁 Struktur Folder Penting
 
 ```bash
@@ -76,7 +76,7 @@ php artisan serve
 | PUT    | /api/tasks/{id}  | Update task       |
 | DELETE | /api/tasks/{id}  | Hapus task        |
 
-> Gunakan Postman atau Thunder Client untuk testing.
+> Gunakan Postman atau Thunder Client untuk testing. -->
 <!-- 
 ---
 
