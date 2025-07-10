@@ -11,5 +11,5 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
     Route::apiResource('/tasks', TaskController::class);
-    Route::patch('/task/{task}/complete', CompleteTaskController::class);
+    Route::patch('/tasks/{task}/complete', CompleteTaskController::class);
 });
