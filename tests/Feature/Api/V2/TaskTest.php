@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests\Feature\Api\V1;
+namespace Tests\Feature\Api\V2;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -10,13 +11,15 @@ class TaskTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_can_get_list_of_tasks(): void
+    public function test_user_can_get_list_of_tasks(): void
     {
         // Arrange: Buat 2 data task menggunakan factory
-        $tasks = Task::factory()->count(2)->create();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $tasks = Task::factory()->count(2)->create(['user_id' => $user->id]);
 
         // Act: Panggil endpoint untuk mendapatkan semua task
-        $response = $this->getJson('/api/v1/tasks');
+        $response = $this->getJson('/api/v2/tasks');
 
         // Assert: Pastikan response berhasil (HTTP 200)
         $response->assertOk();
@@ -30,13 +33,15 @@ class TaskTest extends TestCase
         ]);
     }
 
-    public function test_guest_can_get_single_task(): void
+    public function test_user_can_get_single_task(): void
     {
         // Arrange: Buat 1 data task
-        $task = Task::factory()->create();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $task = Task::factory()->create(['user_id' => $user->id]);
 
         // Act: Panggil endpoint untuk mendapatkan detail task berdasarkan ID
-        $response = $this->getJson('/api/v1/tasks/' . $task->id);
+        $response = $this->getJson('/api/v2/tasks/' . $task->id);
 
         // Assert: Pastikan response berhasil (HTTP 200)
         $response->assertOk();
@@ -57,10 +62,12 @@ class TaskTest extends TestCase
     }
 
     // 'POST /tasks' -> create a new task
-    public function test_guest_can_create_a_new_task(): void
+    public function test_user_can_create_a_new_task(): void
     {
         // Act: Kirim request POST untuk membuat task baru
-        $response = $this->postJson('/api/v1/tasks', [
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $response = $this->postJson('/api/v2/tasks', [
             'name' => 'New Task',
         ]);
 
@@ -78,10 +85,12 @@ class TaskTest extends TestCase
         ]);
     }
 
-    public function test_guest_cannot_create_invalid_task(): void
+    public function test_user_cannot_create_invalid_task(): void
     {
         // Act: Kirim data tidak valid (name kosong)
-        $response = $this->postJson('/api/v1/tasks', [
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $response = $this->postJson('/api/v2/tasks', [
             'name' => '',
         ]);
 
@@ -93,13 +102,15 @@ class TaskTest extends TestCase
     }
 
     // 'PUT /tasks/{id}' -> update existing task
-    public function test_guest_can_update_task(): void
+    public function test_user_can_update_task(): void
     {
         // Arrange: Buat 1 task
+        $user = User::factory()->create();
+        $this->actingAs($user);
         $task = Task::factory()->create();
 
         // Act: Kirim PUT request untuk mengubah nama task
-        $response = $this->putJson('/api/v1/tasks/' . $task->id, [
+        $response = $this->putJson('/api/v2/tasks/' . $task->id, [
             'name' => 'Updated Task',
         ]);
 
@@ -112,13 +123,15 @@ class TaskTest extends TestCase
         ]);
     }
 
-    public function test_guest_cannot_update_with_invalid_data(): void
+    public function test_user_cannot_update_with_invalid_data(): void
     {
         // Arrange: Buat 1 task
+        $user = User::factory()->create();
+        $this->actingAs($user);
         $task = Task::factory()->create();
 
         // Act: Kirim PUT request dengan data invalid (name kosong)
-        $response = $this->putJson('/api/v1/tasks/' . $task->id, [
+        $response = $this->putJson('/api/v2/tasks/' . $task->id, [
             'name' => '',
         ]);
 
@@ -130,15 +143,17 @@ class TaskTest extends TestCase
     }
 
     // 'PATCH /tasks/{id}/complete' -> mark the task as completed or incomplete
-    public function test_guest_can_toggle_task_completion(): void
+    public function test_user_can_toggle_task_completion(): void
     {
         // Arrange: Buat task dengan status belum selesai
+        $user = User::factory()->create();
+        $this->actingAs($user);
         $task = Task::factory()->create([
             'is_completed' => false,
         ]);
 
         // Act: Ubah status is_completed menjadi true
-        $response = $this->patchJson('/api/v1/tasks/' . $task->id . '/complete', [
+        $response = $this->patchJson('/api/v2/tasks/' . $task->id . '/complete', [
             'is_completed' => true,
         ]);
 
@@ -151,13 +166,15 @@ class TaskTest extends TestCase
         ]);
     }
 
-    public function test_guest_cannot_toggle_completed_with_invalid_data(): void
+    public function test_user_cannot_toggle_completed_with_invalid_data(): void
     {
         // Arrange: Buat 1 task
+        $user = User::factory()->create();
+        $this->actingAs($user);
         $task = Task::factory()->create();
 
         // Act: Kirim data yang tidak valid untuk is_completed
-        $response = $this->patchJson('/api/v1/tasks/' . $task->id . '/complete', [
+        $response = $this->patchJson('/api/v2/tasks/' . $task->id . '/complete', [
             'is_completed' => 'yes', // seharusnya boolean
         ]);
 
@@ -169,13 +186,15 @@ class TaskTest extends TestCase
     }
 
     // 'DELETE /tasks/{id}' -> delete a task
-    public function test_guest_can_delete_task(): void
+    public function test_user_can_delete_task(): void
     {
         // Arrange: Buat 1 task
+        $user = User::factory()->create();
+        $this->actingAs($user);
         $task = Task::factory()->create();
 
         // Act: Hapus task tersebut
-        $response = $this->deleteJson('/api/v1/tasks/' . $task->id);
+        $response = $this->deleteJson('/api/v2/tasks/' . $task->id);
 
         // Assert: Response tidak mengandung konten (HTTP 204)
         $response->assertNoContent();
