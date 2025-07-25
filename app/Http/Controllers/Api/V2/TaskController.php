@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api\V2;
 
 use App\Models\Task;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Contracts\Cache\Store;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
@@ -16,11 +18,14 @@ class TaskController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Task::class);
+
         // return TaskResource::collection(Task::all());
-        return request()->user()
-            ->tasks()
-            ->get()
-            ->toResourceCollection();
+        return request()
+        ->user()
+        ->tasks()
+        ->get()
+        ->toResourceCollection();
     }
 
     /**
@@ -28,7 +33,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        // $task = Task::create($request->validated() + ['user_id' => $request->user()->id]);
+        Gate::authorize('create', Task::class);
+        // $task = Task::create($request->validated()+ ['user_id' => request()->user()->id]);
+
         $task = $request->user()->tasks()->create($request->validated());
 
         return $task->toResource();
@@ -39,10 +46,9 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        Gate::authorize('view', $task);
         // return new TaskResource($task);
         // return TaskResource::make($task);
-        Gate::authorize('view', $task);
-
         return $task->toResource();
     }
 
@@ -51,6 +57,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        Gate::authorize('update', $task);
+
         $task->update($request->validated());
 
         return $task->toResource();
@@ -61,6 +69,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        Gate::authorize('delete', $task);
+
         $task->delete();
 
         return response()->noContent();
