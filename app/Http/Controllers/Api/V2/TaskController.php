@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Api\V2;
 
 use App\Models\Task;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TaskResource;
-use Illuminate\Contracts\Cache\Store;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\TaskResource;
 
 class TaskController extends Controller
 {
@@ -18,11 +16,10 @@ class TaskController extends Controller
     public function index()
     {
         // return TaskResource::collection(Task::all());
-        return request()
-        ->user()
-        ->tasks()
-        ->get()
-        ->toResourceCollection();
+        return request()->user()
+            ->tasks()
+            ->get()
+            ->toResourceCollection();
     }
 
     /**
@@ -30,8 +27,7 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        // $task = Task::create($request->validated()+ ['user_id' => request()->user()->id]);
-
+        // $task = Task::create($request->validated() + ['user_id' => $request->user()->id]);
         $task = $request->user()->tasks()->create($request->validated());
 
         return $task->toResource();
