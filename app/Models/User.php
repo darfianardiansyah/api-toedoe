@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -53,10 +55,19 @@ class User extends Authenticatable
         return $this->hasMany(Task::class);
     }
 
-    public function tasksSummary()
+    public function tasksSummary(?string $period = null): Collection
     {
+        [$start, $end] = match ($period) {
+            'today' => [now()->startOfDay(), now()->endOfDay()],
+            'yesterday' => [now()->subDay()->startOfDay(), now()->subDay()->endOfDay()],
+            'lastweek', 'last-week' => [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()],
+            'thismonth', 'this-month' => [now()->startOfMonth(), now()->endOfMonth()],
+            'lastmonth', 'last-month' => [now()->startOfMonth()->subMonthsNoOverflow(), now()->subMonthsNoOverflow()->endOfMonth()],
+            default => [now()->startOfWeek(), now()->endOfWeek()],
+        };
+
         return $this->tasks()
-            ->where('created_at', '>=', now()->subDays(7))
+            ->whereBetween('created_at', [$start, $end])
             ->latest()
             ->get();
     }
