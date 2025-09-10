@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -15,9 +14,10 @@ class TaskResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'is_completed' => $this->is_completed
+            'id'           => $this->id,
+            'name'         => $this->name,
+            'is_completed' => $this->is_completed,
+            'priority'     => PriorityResource::make($this->whenLoaded('priority')),
         ];
     }
 }
