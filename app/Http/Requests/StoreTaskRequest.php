@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\Priority;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTaskRequest extends FormRequest
